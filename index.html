@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AMD Floor</title>
+<style>
+:root{--bg:#f5f7f6;--card:#fff;--ink:#17211c;--muted:#7d8782;--line:#e6ebe8;--accent:#dfff64}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+aside{position:fixed;right:0;top:0;bottom:0;width:245px;background:#111915;color:#fff;padding:22px 16px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--accent);color:#111915;display:grid;place-items:center;font-weight:800}
+.brand small{display:block;color:#aeb8b2;margin-top:3px}
+nav button{width:100%;display:block;border:0;background:transparent;color:#c7d0cb;text-align:right;padding:13px;border-radius:10px;margin:5px 0;font:inherit}
+nav button.active,nav button:hover{background:#26342e;color:#fff}
+main{margin-right:245px;padding:24px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1,h2,p{margin-top:0}
+.sub{color:var(--muted);font-size:14px}
+.btn{border:0;background:#17211c;color:#fff;padding:11px 15px;border-radius:10px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:18px}
+.stat span{display:block;color:var(--muted);font-size:13px}
+.stat strong{display:block;font-size:26px;margin:8px 0}
+.two{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-top:14px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.badge{background:#fff2cf;color:#8b6300;padding:5px 8px;border-radius:20px;font-size:11px}
+.page{display:none}.page.active{display:block}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:right;padding:12px;border-bottom:1px solid var(--line);font-size:13px}
+.modal{position:fixed;inset:0;background:#0007;display:none;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modalbox{width:min(420px,90vw);background:#fff;border-radius:16px;padding:20px}
+input{width:100%;padding:12px;margin:7px 0 12px;border:1px solid #d9dfdc;border-radius:10px}
+@media(max-width:800px){aside{width:78px}.brand div:last-child{display:none}nav button{font-size:0}nav button:after{content:"•";font-size:22px}main{margin-right:78px;padding:14px}.grid{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}header{align-items:flex-start;gap:10px}}
+</style>
+</head>
+<body>
+<aside>
+  <div class="brand"><div class="logo">A</div><div><b>AMD Floor</b><small>إدارة المطاعم والكوفيهات</small></div></div>
+  <nav>
+    <button class="active" data-page="dashboard">لوحة التحكم</button>
+    <button data-page="sales">المبيعات</button>
+    <button data-page="purchases">المشتريات</button>
+    <button data-page="inventory">المخزون والجرد</button>
+  </nav>
+</aside>
+<main>
+<header>
+  <div><h1 id="title">لوحة التحكم</h1><div class="sub" id="subtitle">نظرة سريعة على أداء المحل اليوم</div></div>
+  <button class="btn" id="saleBtn">+ عملية بيع</button>
+</header>
+
+<section class="page active" id="dashboard">
+  <div class="grid">
+    <div class="card stat"><span>مبيعات اليوم</span><strong>8,420 ر.س</strong><small>+12.4%</small></div>
+    <div class="card stat"><span>عدد الطلبات</span><strong>186</strong><small>اليوم</small></div>
+    <div class="card stat"><span>متوسط الطلب</span><strong>45.27 ر.س</strong><small>اليوم</small></div>
+    <div class="card stat"><span>مواد منخفضة</span><strong>4</strong><small>تحتاج إعادة طلب</small></div>
+  </div>
+  <div class="two">
+    <div class="card"><h2>آخر العمليات</h2>
+      <div class="row"><span>#S-1048 — طلب كاشير</span><b>72 ر.س</b></div>
+      <div class="row"><span>#S-1047 — طلب كاشير</span><b>38 ر.س</b></div>
+      <div class="row"><span>#S-1046 — طاولة 12</span><b>126 ر.س</b></div>
+    </div>
+    <div class="card"><h2>تنبيهات المخزون</h2>
+      <div class="row"><span>حليب كامل الدسم</span><span class="badge">منخفض</span></div>
+      <div class="row"><span>بن إثيوبي</span><span class="badge">منخفض</span></div>
+      <div class="row"><span>أكواب 12 أونصة</span><span class="badge">منخفض</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="sales">
+  <div class="card"><h2>المبيعات</h2><div id="salesList"></div></div>
+</section>
+
+<section class="page" id="purchases">
+  <div class="card"><h2>المشتريات</h2>
+    <div class="row"><span>#P-0221 — توريد حليب وبن</span><b>1,280 ر.س</b></div>
+    <div class="row"><span>#P-0220 — مواد تغليف</span><b>760 ر.س</b></div>
+  </div>
+</section>
+
+<section class="page" id="inventory">
+  <div class="card"><h2>المخزون والجرد</h2>
+    <table><thead><tr><th>الصنف</th><th>الكمية</th><th>الحالة</th></tr></thead>
+    <tbody>
+      <tr><td>حليب كامل الدسم</td><td>8 لتر</td><td><span class="badge">منخفض</span></td></tr>
+      <tr><td>بن إثيوبي</td><td>2.5 كجم</td><td><span class="badge">منخفض</span></td></tr>
+      <tr><td>سكر أبيض</td><td>18 كجم</td><td>جيد</td></tr>
+    </tbody></table>
+  </div>
+</section>
+</main>
+
+<div class="modal" id="modal">
+  <div class="modalbox">
+    <h2>إضافة عملية بيع</h2>
+    <form id="saleForm">
+      <label>الوصف</label>
+      <input id="desc" required placeholder="مثال: طلب كاشير">
+      <label>المبلغ</label>
+      <input id="amount" type="number" min="1" required placeholder="0">
+      <button class="btn" type="submit">حفظ</button>
+      <button class="btn" type="button" id="closeBtn" style="background:#68736d">إلغاء</button>
+    </form>
+  </div>
+</div>
+
+<script>
+const labels={
+ dashboard:["لوحة التحكم","نظرة سريعة على أداء المحل اليوم"],
+ sales:["المبيعات","إدارة عمليات البيع"],
+ purchases:["المشتريات","طلبات التوريد والموردين"],
+ inventory:["المخزون والجرد","متابعة الكميات"]
+};
+document.querySelectorAll("nav button").forEach(function(btn){
+  btn.addEventListener("click",function(){
+    document.querySelectorAll("nav button").forEach(function(b){b.classList.remove("active")});
+    document.querySelectorAll(".page").forEach(function(p){p.classList.remove("active")});
+    btn.classList.add("active");
+    var id=btn.getAttribute("data-page");
+    document.getElementById(id).classList.add("active");
+    document.getElementById("title").textContent=labels[id][0];
+    document.getElementById("subtitle").textContent=labels[id][1];
+  });
+});
+var sales=[
+  {id:"#S-1048",d:"طلب كاشير",a:72},
+  {id:"#S-1047",d:"طلب كاشير",a:38},
+  {id:"#S-1046",d:"طاولة 12",a:126}
+];
+function renderSales(){
+  document.getElementById("salesList").innerHTML=sales.map(function(x){
+    return '<div class="row"><span>'+x.id+' — '+x.d+'</span><b>'+x.a+' ر.س</b></div>';
+  }).join("");
+}
+renderSales();
+var modal=document.getElementById("modal");
+document.getElementById("saleBtn").onclick=function(){modal.classList.add("open")};
+document.getElementById("closeBtn").onclick=function(){modal.classList.remove("open")};
+document.getElementById("saleForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  var d=document.getElementById("desc").value.trim();
+  var a=Number(document.getElementById("amount").value);
+  if(!d||!a)return;
+  sales.unshift({id:"#S-"+(1049+sales.length),d:d,a:a});
+  renderSales();
+  this.reset();
+  modal.classList.remove("open");
+});
+</script>
+</body>
+</html>
