@@ -156,24 +156,41 @@ button{
 
 </div>
 
-<script>
-const loginForm=document.getElementById("loginForm");
 
-loginForm.onsubmit=function(e){
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabaseUrl = "https://qxgundqtkhkbrcvvhghv.supabase.co";
+const supabaseKey = "sb_publishable_OnVvEW07Fn7YDWyBHkiIgg_0Bz3CcEs";
+
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+const loginForm = document.getElementById("loginForm");
+
+loginForm.addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const error = document.getElementById("error");
 
-  if(email && password){
-    localStorage.setItem("amdFloorLoggedIn","true");
-    localStorage.setItem("amdFloorUser",email);
-    window.location.href="index.html";
-  }else{
-    document.getElementById("error").style.display="block";
+  error.style.display = "none";
+
+  const { data, error: loginError } =
+    await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+  if (loginError) {
+    error.textContent = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+    error.style.display = "block";
+    return;
   }
-};
-</script>
 
+  window.location.href = "index.html";
+});
+</script>
 </body>
 </html>
