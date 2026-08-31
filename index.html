@@ -154,7 +154,43 @@ table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:12px 8p
 <label>تكلفة الوحدة</label><input id="invCost" type="number" min="0" step="0.01" required>
 <div class="modalactions"><button class="btn primary" type="submit">إضافة الصنف</button><button class="btn secondary" type="button" data-close="inventoryModal">إلغاء</button></div>
 </form></div></div>
+<div class="modal" id="editInventoryModal"><div class="modalCard">
+<h3>تعديل صنف المخزون</h3>
+<form id="editInventoryForm">
+<input type="hidden" id="editInventoryId">
 
+<label>اسم الصنف</label>
+<input id="editInvName" required>
+
+<label>الوحدة</label>
+<input id="editInvUnit" required>
+
+<label>الكمية الحالية</label>
+<input id="editInvQty" type="number" min="0" step="0.001" required>
+
+<label>حد إعادة الطلب</label>
+<input id="editInvMin" type="number" min="0" step="0.001" required>
+
+<label>تكلفة الوحدة</label>
+<input id="editInvCost" type="number" min="0" step="0.01" required>
+
+<div class="modalActions">
+<button class="btn primary" type="submit">حفظ التعديلات</button>
+<button class="btn" type="button" onclick="closeModal('editInventoryModal')">إلغاء</button>
+</div>
+</form>
+</div></div>
+
+<div class="modal" id="deleteInventoryModal"><div class="modalCard">
+<h3>حذف صنف المخزون</h3>
+<p>هل أنت متأكد من حذف هذا الصنف؟</p>
+<input type="hidden" id="deleteInventoryId">
+
+<div class="modalActions">
+<button class="btn primary" type="button" id="confirmDeleteInventory">نعم، حذف</button>
+<button class="btn" type="button" onclick="closeModal('deleteInventoryModal')">إلغاء</button>
+</div>
+</div></div>
 <div class="modal" id="productModal"><div class="modalbox"><h2>إضافة منتج</h2><form id="productForm">
  
 <label>اسم المنتج</label><input id="productName" required>
@@ -255,37 +291,54 @@ inventoryForm.onsubmit=e=>{e.preventDefault();data.inventory.push({id:Date.now()
   const item=data.inventory.find(x=>String(x.id)===String(id));
   if(!item)return;
 
-  const name=prompt("اسم الصنف",item.name);
-  if(name===null)return;
+  editInventoryId.value=item.id;
+  editInvName.value=item.name;
+  editInvUnit.value=item.unit;
+  editInvQty.value=item.qty;
+  editInvMin.value=item.min;
+  editInvCost.value=item.cost;
 
-  const unit=prompt("الوحدة",item.unit);
-  if(unit===null)return;
+  openModal("editInventoryModal");
+}
 
-  const qty=prompt("الكمية الحالية",item.qty);
-  if(qty===null)return;
+editInventoryForm.onsubmit=e=>{
+  e.preventDefault();
 
-  const min=prompt("حد إعادة الطلب",item.min);
-  if(min===null)return;
+  const item=data.inventory.find(x=>String(x.id)===String(editInventoryId.value));
+  if(!item)return;
 
-  const cost=prompt("تكلفة الوحدة",item.cost);
-  if(cost===null)return;
-
-  item.name=name.trim()||item.name;
-  item.unit=unit.trim()||item.unit;
-  item.qty=Number(qty);
-  item.min=Number(min);
-  item.cost=Number(cost);
+  item.name=editInvName.value.trim()||item.name;
+  item.unit=editInvUnit.value.trim()||item.unit;
+  item.qty=Number(editInvQty.value);
+  item.min=Number(editInvMin.value);
+  item.cost=Number(editInvCost.value);
 
   save();
   renderAll();
-}
+  closeModal("editInventoryModal");
+};
 
 function deleteInventory(id){
-  if(!confirm("هل أنت متأكد من حذف هذا الصنف؟"))return;
+  const linked=data.products.some(x=>String(x.stockId)===String(id));
+
+  if(linked){
+    alert("لا يمكن حذف هذا الصنف لأنه مرتبط بمنتج. فك الارتباط من المنتج أولاً.");
+    return;
+  }
+
+  deleteInventoryId.value=id;
+  openModal("deleteInventoryModal");
+}
+
+confirmDeleteInventory.onclick=()=>{
+  const id=deleteInventoryId.value;
+
   data.inventory=data.inventory.filter(x=>String(x.id)!==String(id));
+
   save();
   renderAll();
-}
+  closeModal("deleteInventoryModal");
+};
 productForm.onsubmit=e=>{e.preventDefault();data.products.push({id:Date.now(),name:productName.value.trim(),price:Number(productPrice.value),stockId:Number(productStock.value||0),usage:Number(productUsage.value||0)});e.target.reset();closeModal("productModal");save()};
 supplierForm.onsubmit=e=>{e.preventDefault();data.suppliers.push({id:Date.now(),name:supplierName.value.trim(),phone:supplierPhone.value.trim(),note:supplierNote.value.trim()});e.target.reset();closeModal("supplierModal");save()};
 function deleteProduct(id){
