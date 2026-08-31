@@ -206,7 +206,12 @@ purchaseForm.onsubmit=e=>{
 inventoryForm.onsubmit=e=>{e.preventDefault();data.inventory.push({id:Date.now(),name:invName.value.trim(),unit:invUnit.value.trim(),qty:Number(invQty.value),min:Number(invMin.value),cost:Number(invCost.value)});e.target.reset();closeModal("inventoryModal");save()};
 productForm.onsubmit=e=>{e.preventDefault();data.products.push({id:Date.now(),name:productName.value.trim(),price:Number(productPrice.value),stockId:Number(productStock.value||0),usage:Number(productUsage.value||0)});e.target.reset();closeModal("productModal");save()};
 supplierForm.onsubmit=e=>{e.preventDefault();data.suppliers.push({id:Date.now(),name:supplierName.value.trim(),phone:supplierPhone.value.trim(),note:supplierNote.value.trim()});e.target.reset();closeModal("supplierModal");save()};
-
+function deleteProduct(id){
+  if(!confirm("متأكد تبي تحذف المنتج؟")) return;
+  data.products=data.products.filter(x=>x.id!==id);
+  save();
+  renderAll();
+}
 function renderAll(){
  const todays=data.sales.filter(x=>isToday(x.date));const ts=todays.reduce((a,b)=>a+Number(b.amount),0);todaySales.textContent=money(ts);todayOrders.textContent=todays.length;avgOrder.textContent=money(todays.length?ts/todays.length:0);
  const low=data.inventory.filter(x=>Number(x.qty)<=Number(x.min));lowCount.textContent=low.length;
