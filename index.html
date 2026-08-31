@@ -251,6 +251,41 @@ purchaseForm.onsubmit=e=>{
  e.target.reset();closeModal("purchaseModal");save()
 };
 inventoryForm.onsubmit=e=>{e.preventDefault();data.inventory.push({id:Date.now(),name:invName.value.trim(),unit:invUnit.value.trim(),qty:Number(invQty.value),min:Number(invMin.value),cost:Number(invCost.value)});e.target.reset();closeModal("inventoryModal");save()};
+  function editInventory(id){
+  const item=data.inventory.find(x=>String(x.id)===String(id));
+  if(!item)return;
+
+  const name=prompt("اسم الصنف",item.name);
+  if(name===null)return;
+
+  const unit=prompt("الوحدة",item.unit);
+  if(unit===null)return;
+
+  const qty=prompt("الكمية الحالية",item.qty);
+  if(qty===null)return;
+
+  const min=prompt("حد إعادة الطلب",item.min);
+  if(min===null)return;
+
+  const cost=prompt("تكلفة الوحدة",item.cost);
+  if(cost===null)return;
+
+  item.name=name.trim()||item.name;
+  item.unit=unit.trim()||item.unit;
+  item.qty=Number(qty);
+  item.min=Number(min);
+  item.cost=Number(cost);
+
+  save();
+  renderAll();
+}
+
+function deleteInventory(id){
+  if(!confirm("هل أنت متأكد من حذف هذا الصنف؟"))return;
+  data.inventory=data.inventory.filter(x=>String(x.id)!==String(id));
+  save();
+  renderAll();
+}
 productForm.onsubmit=e=>{e.preventDefault();data.products.push({id:Date.now(),name:productName.value.trim(),price:Number(productPrice.value),stockId:Number(productStock.value||0),usage:Number(productUsage.value||0)});e.target.reset();closeModal("productModal");save()};
 supplierForm.onsubmit=e=>{e.preventDefault();data.suppliers.push({id:Date.now(),name:supplierName.value.trim(),phone:supplierPhone.value.trim(),note:supplierNote.value.trim()});e.target.reset();closeModal("supplierModal");save()};
 function deleteProduct(id){
@@ -305,7 +340,7 @@ function renderAll(){
  recentSales.innerHTML=data.sales.slice(0,5).map(x=>`<div class="row"><div><b>#${x.id}</b><small>${x.product} × ${x.qty}</small></div><b>${money(x.amount)}</b></div>`).join("");
  salesList.innerHTML=data.sales.map(x=>`<div class="row"><div><b>#${x.id} — ${x.product}</b><small>${x.qty} طلب · ${new Date(x.date).toLocaleString("ar-SA")}</small></div><b>${money(x.amount)}</b></div>`).join("");
  purchasesList.innerHTML=data.purchases.map(x=>`<div class="row"><div><b>#${x.id} — ${x.item}</b><small>${x.supplier} · ${x.qty} ${data.inventory.find(i=>i.name===x.item)?.unit||""}</small></div><b>${money(x.amount)}</b></div>`).join("");
-inventoryBody.innerHTML=data.inventory.map(x=>`<tr><td>${x.name}</td><td>${x.unit}</td><td>${Number(x.qty).toLocaleString("ar-SA",{maximumFractionDigits:3})}</td><td>${Number(x.min).toLocaleString("ar-SA")}</td><td><span class="badge ${x.qty>x.min?"ok":""}">${x.qty>x.min?"جيد":"منخفض"}</span></td></tr>`).join("");
+inventoryBody.innerHTML=data.inventory.map(x=>`<tr><td>${x.name}<div style="margin-top:8px;display:flex;gap:6px"><button type="button" onclick="editInventory('${x.id}')">تعديل</button><button type="button" onclick="deleteInventory('${x.id}')">حذف</button></div></td><td>${x.unit}</td><td>${Number(x.qty).toLocaleString("ar-SA",{maximumFractionDigits:3})}</td><td>${Number(x.min).toLocaleString("ar-SA",{maximumFractionDigits:3})}</td><td><span class="badge ${x.qty>x.min?"ok":""}">${x.qty>x.min?"جيد":"منخفض"}</span></td></tr>`).join(""); 
  productsList.innerHTML=data.products.map(x=>`<div class="row product-card"><div><b>${x.name}</b><small>سعر البيع ${money(x.price)}</small></div><div><span class="badge ok">${x.stockId?"مرتبط بالمخزون":"بدون مخزون"}</span><button type="button" onclick="editProduct('${x.id}')">تعديل</button><button type="button" onclick="deleteProduct('${x.id}')">حذف</button></div></div>`).join("");
  suppliersList.innerHTML=data.suppliers.map(x=>`<div class="row"><div><b>${x.name}</b><small>${x.phone||"بدون رقم"}${x.note?" · "+x.note:""}</small></div><span class="badge ok">مورد</span></div>`).join("");
 
