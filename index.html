@@ -168,10 +168,25 @@ table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:12px 8p
 <h3>تعديل المنتج</h3>
 <form id="editProductForm">
 <input type="hidden" id="editProductId">
-<label>اسم المنتج</label><input id="editProductName" required>
-<label>سعر البيع</label><input id="editProductPrice" type="number" min="0" step="0.01" required>
-<div class="modalActions"><button class="btn primary" type="submit">حفظ التعديلات</button><button class="btn" type="button" onclick="closeModal('editProductModal')">إلغاء</button></div>
-</form></div></div>  
+
+<label>اسم المنتج</label>
+<input id="editProductName" required>
+
+<label>سعر البيع</label>
+<input id="editProductPrice" type="number" min="0" step="0.01" required>
+
+<label>صنف المخزون المرتبط</label>
+<select id="editProductStock"></select>
+
+<label>الكمية المستخدمة لكل طلب</label>
+<input id="editProductUsage" type="number" min="0" step="0.01" required>
+
+<div class="modalActions">
+<button class="btn primary" type="submit">حفظ التعديلات</button>
+<button class="btn" type="button" onclick="closeModal('editProductModal')">إلغاء</button>
+</div>
+</form>
+</div></div>
 <div class="modal" id="deleteProductModal"><div class="modalCard">
 <h3>حذف المنتج</h3>
 <p>هل أنت متأكد من حذف هذا المنتج؟</p>
@@ -257,6 +272,13 @@ confirmDeleteProduct.onclick=()=>{
   editProductId.value=p.id;
   editProductName.value=p.name;
   editProductPrice.value=p.price;
+  editProductUsage.value=Number(p.usage||0);
+
+  editProductStock.innerHTML=
+    `<option value="0">بدون ارتباط بالمخزون</option>`+
+    data.inventory.map(x=>`<option value="${x.id}">${x.name}</option>`).join("");
+
+  editProductStock.value=String(p.stockId||0);
 
   openModal("editProductModal");
 }
@@ -268,7 +290,9 @@ editProductForm.onsubmit=e=>{
   if(!p) return;
 
   p.name=editProductName.value.trim()||p.name;
-  p.price=Number(editProductPrice.value)||p.price;
+  p.price=Number(editProductPrice.value);
+  p.stockId=Number(editProductStock.value||0);
+  p.usage=Number(editProductUsage.value||0);
 
   save();
   renderAll();
