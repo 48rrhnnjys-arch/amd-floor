@@ -208,7 +208,7 @@ productForm.onsubmit=e=>{e.preventDefault();data.products.push({id:Date.now(),na
 supplierForm.onsubmit=e=>{e.preventDefault();data.suppliers.push({id:Date.now(),name:supplierName.value.trim(),phone:supplierPhone.value.trim(),note:supplierNote.value.trim()});e.target.reset();closeModal("supplierModal");save()};
 function deleteProduct(id){
   if(!confirm("متأكد تبي تحذف المنتج؟")) return;
-  data.products=data.products.filter(x=>x.id!==id);
+  data.products=data.products.filter(x=>String(x.id)!==String(id));
   save();
   renderAll();
 }
