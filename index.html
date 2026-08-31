@@ -212,6 +212,22 @@ function deleteProduct(id){
   save();
   renderAll();
 }
+  function editProduct(id){
+  const p=data.products.find(x=>String(x.id)===String(id));
+  if(!p) return;
+
+  const newName=prompt("اسم المنتج:",p.name);
+  if(newName===null) return;
+
+  const newPrice=prompt("سعر البيع:",p.price);
+  if(newPrice===null) return;
+
+  p.name=newName.trim()||p.name;
+  p.price=Number(newPrice)||p.price;
+
+  save();
+  renderAll();
+}
 function renderAll(){
  const todays=data.sales.filter(x=>isToday(x.date));const ts=todays.reduce((a,b)=>a+Number(b.amount),0);todaySales.textContent=money(ts);todayOrders.textContent=todays.length;avgOrder.textContent=money(todays.length?ts/todays.length:0);
  const low=data.inventory.filter(x=>Number(x.qty)<=Number(x.min));lowCount.textContent=low.length;
@@ -220,7 +236,7 @@ function renderAll(){
  salesList.innerHTML=data.sales.map(x=>`<div class="row"><div><b>#${x.id} — ${x.product}</b><small>${x.qty} طلب · ${new Date(x.date).toLocaleString("ar-SA")}</small></div><b>${money(x.amount)}</b></div>`).join("");
  purchasesList.innerHTML=data.purchases.map(x=>`<div class="row"><div><b>#${x.id} — ${x.item}</b><small>${x.supplier} · ${x.qty} ${data.inventory.find(i=>i.name===x.item)?.unit||""}</small></div><b>${money(x.amount)}</b></div>`).join("");
  inventoryBody.innerHTML=data.inventory.map(x=>`<tr><td>${x.name}</td><td>${x.unit}</td><td>${Number(x.qty).toLocaleString("ar-SA",{maximumFractionDigits:2})}</td><td>${Number(x.min).toLocaleString("ar-SA")}</td><td><span class="badge ${x.qty>x.min?"ok":""}">${x.qty>x.min?"جيد":"منخفض"}</span></td></tr>`).join("");
- productsList.innerHTML=data.products.map(x=>`<div class="row product-card"><div><b>${x.name}</b><small>سعر البيع ${money(x.price)}</small></div><div><span class="badge ok">${x.stockId?"مرتبط بالمخزون":"بدون مخزون"}</span><button type="button" onclick="deleteProduct('${x.id}')">حذف</button></div></div>`).join("");
+ productsList.innerHTML=data.products.map(x=>`<div class="row product-card"><div><b>${x.name}</b><small>سعر البيع ${money(x.price)}</small></div><div><span class="badge ok">${x.stockId?"مرتبط بالمخزون":"بدون مخزون"}</span><button type="button" onclick="editProduct('${x.id}')">تعديل</button><button type="button" onclick="deleteProduct('${x.id}')">حذف</button></div></div>`).join("");
  suppliersList.innerHTML=data.suppliers.map(x=>`<div class="row"><div><b>${x.name}</b><small>${x.phone||"بدون رقم"}${x.note?" · "+x.note:""}</small></div><span class="badge ok">مورد</span></div>`).join("");
 
  saleProduct.innerHTML=data.products.map(x=>`<option value="${x.id}">${x.name} — ${money(x.price)}</option>`).join("");
