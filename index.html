@@ -181,16 +181,19 @@ table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:12px 8p
 </form>
 </div></div>
 
-<div class="modal" id="deleteInventoryModal"><div class="modalCard">
-<h3>حذف صنف المخزون</h3>
-<p>هل أنت متأكد من حذف هذا الصنف؟</p>
-<input type="hidden" id="deleteInventoryId">
+<div class="modal" id="deleteInventoryModal">
+  <div class="modalCard">
+    <h3>حذف صنف المخزون</h3>
+    <p>هل أنت متأكد من حذف هذا الصنف؟</p>
 
-<div class="modalActions">
-<button class="btn primary" type="button" id="confirmDeleteInventory">نعم، حذف</button>
-<button class="btn" type="button" onclick="closeModal('deleteInventoryModal')">إلغاء</button>
+    <input type="hidden" id="deleteInventoryId">
+
+    <div class="modalActions">
+      <button class="btn primary" type="button" id="confirmDeleteInventory">نعم، حذف</button>
+      <button class="btn" type="button" onclick="closeModal('deleteInventoryModal')">إلغاء</button>
+    </div>
+  </div>
 </div>
-</div></div>
 <div class="modal" id="productModal"><div class="modalbox"><h2>إضافة منتج</h2><form id="productForm">
  
 <label>اسم المنتج</label><input id="productName" required>
