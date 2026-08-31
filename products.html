@@ -159,11 +159,11 @@
     if (error) {
       console.error(error);
 
-      container.innerHTML = `
-        <div class="error">
-          حدث خطأ أثناء تحميل المنتجات
-        </div>
-      `;
+     container.innerHTML = `
+  <div class="error">
+    ${error.message}
+  </div>
+`;
 
       return;
     }
