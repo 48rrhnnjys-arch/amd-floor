@@ -181,30 +181,83 @@
     container.innerHTML = "";
 
     data.forEach(product => {
-      const card = document.createElement("div");
+  const card = document.createElement("div");
+  card.className = "product-card";
 
-      card.className = "product-card";
+  card.innerHTML = `
+    <h3>${product.name ?? "بدون اسم"}</h3>
 
-      card.innerHTML = `
-        <h3>${product.name ?? "بدون اسم"}</h3>
+    <div class="info">
+      <span>السعر</span>
+      <span class="price">
+        ${product.price ?? 0} ر.س
+      </span>
+    </div>
 
-        <div class="info">
-          <span>السعر</span>
-          <span class="price">
-            ${product.price ?? 0} ر.س
-          </span>
-        </div>
+    <div class="info">
+      <span>الكمية بالمخزون</span>
+      <span>
+        ${product.stock_quantity ?? 0}
+      </span>
+    </div>
 
-        <div class="info">
-          <span>الكمية بالمخزون</span>
-          <span>
-            ${product.stock_quantity ?? 0}
-          </span>
-        </div>
-      `;
+    <div style="display:flex; gap:10px; margin-top:15px;">
+      <button class="edit-btn" type="button">تعديل</button>
+      <button class="delete-btn" type="button">حذف</button>
+    </div>
+  `;
 
-      container.appendChild(card);
-    });
+  card.querySelector(".edit-btn").addEventListener("click", async () => {
+    const name = prompt("اسم المنتج:", product.name ?? "");
+    if (name === null) return;
+
+    const price = prompt("سعر البيع:", product.price ?? 0);
+    if (price === null) return;
+
+    const stock = prompt(
+      "الكمية بالمخزون:",
+      product.stock_quantity ?? 0
+    );
+    if (stock === null) return;
+
+    const { error } = await client
+      .from("products")
+      .update({
+        name: name.trim(),
+        price: Number(price),
+        stock_quantity: Number(stock)
+      })
+      .eq("id", product.id);
+
+    if (error) {
+      alert("صار خطأ أثناء التعديل");
+      console.error(error);
+      return;
+    }
+
+    await loadProducts();
+  });
+
+  card.querySelector(".delete-btn").addEventListener("click", async () => {
+    const ok = confirm(`متأكد تبي تحذف ${product.name}؟`);
+    if (!ok) return;
+
+    const { error } = await client
+      .from("products")
+      .delete()
+      .eq("id", product.id);
+
+    if (error) {
+      alert("صار خطأ أثناء الحذف");
+      console.error(error);
+      return;
+    }
+
+    await loadProducts();
+  });
+
+  container.appendChild(card);
+});
   }
 
   async function logout() {
