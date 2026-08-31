@@ -149,6 +149,15 @@ table{width:100%;border-collapse:collapse}th,td{text-align:right;padding:12px 8p
 <div class="modalactions"><button class="btn primary" type="submit">إضافة المنتج</button><button class="btn secondary" type="button" data-close="productModal">إلغاء</button></div>
 </form></div></div>
 
+<div class="modal" id="editProductModal"><div class="modalCard">
+<h3>تعديل المنتج</h3>
+<form id="editProductForm">
+<input type="hidden" id="editProductId">
+<label>اسم المنتج</label><input id="editProductName" required>
+<label>سعر البيع</label><input id="editProductPrice" type="number" min="0" step="0.01" required>
+<div class="modalActions"><button class="btn primary" type="submit">حفظ التعديلات</button><button class="btn" type="button" onclick="closeModal('editProductModal')">إلغاء</button></div>
+</form></div></div>  
+
 <div class="modal" id="supplierModal"><div class="modalbox"><h2>إضافة مورد</h2><form id="supplierForm">
 <label>اسم المورد</label><input id="supplierName" required>
 <label>رقم الجوال</label><input id="supplierPhone" inputmode="tel">
@@ -212,22 +221,30 @@ function deleteProduct(id){
   save();
   renderAll();
 }
-  function editProduct(id){
+ function editProduct(id){
   const p=data.products.find(x=>String(x.id)===String(id));
   if(!p) return;
 
-  const newName=prompt("اسم المنتج:",p.name);
-  if(newName===null) return;
+  editProductId.value=p.id;
+  editProductName.value=p.name;
+  editProductPrice.value=p.price;
 
-  const newPrice=prompt("سعر البيع:",p.price);
-  if(newPrice===null) return;
+  openModal("editProductModal");
+}
 
-  p.name=newName.trim()||p.name;
-  p.price=Number(newPrice)||p.price;
+editProductForm.onsubmit=e=>{
+  e.preventDefault();
+
+  const p=data.products.find(x=>String(x.id)===String(editProductId.value));
+  if(!p) return;
+
+  p.name=editProductName.value.trim()||p.name;
+  p.price=Number(editProductPrice.value)||p.price;
 
   save();
   renderAll();
-}
+  closeModal("editProductModal");
+};
 function renderAll(){
  const todays=data.sales.filter(x=>isToday(x.date));const ts=todays.reduce((a,b)=>a+Number(b.amount),0);todaySales.textContent=money(ts);todayOrders.textContent=todays.length;avgOrder.textContent=money(todays.length?ts/todays.length:0);
  const low=data.inventory.filter(x=>Number(x.qty)<=Number(x.min));lowCount.textContent=low.length;
